@@ -1,14 +1,13 @@
--- x402-TRON | Author: Richard Patterson
-import Mathlib.Data.Finset.Basic
-namespace X402TRON
-structure TRONPayment where
-  nonce : Nat; amount : Nat; expiration_ms : Nat
-  deriving Repr
-structure ContractState where
-  used_nonces : Finset Nat; block_time_ms : Nat
-  deriving Repr
-def verify (p : TRONPayment) (s : ContractState) : Prop :=
-  p.nonce ∉ s.used_nonces ∧ s.block_time_ms ≤ p.expiration_ms
-theorem tron_replay_prevented (p : TRONPayment) (s : ContractState)
-    (h : verify p s) : p.nonce ∉ s.used_nonces := h.1
-end X402TRON
+-- x402-TRON Payment Verification | Author: Richard Patterson
+import X402TRON.Basic
+
+namespace X402TRON.Verification
+
+def settle (p : TRONPayment) (s : ContractState) (h : verify p s) : ContractState :=
+  { s with used_nonces := s.used_nonces ∪ {p.nonce} }
+
+theorem settled_nonce_recorded (p : TRONPayment) (s : ContractState) (h : verify p s)
+    : p.nonce ∈ (settle p s h).used_nonces := by
+  simp [settle, Finset.mem_union, Finset.mem_singleton]
+
+end X402TRON.Verification
