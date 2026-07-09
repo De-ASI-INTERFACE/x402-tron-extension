@@ -1,27 +1,32 @@
--- x402-TRON Basic | Author: Richard Patterson (@De-ASI-INTERFACE)
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Nat.Basic
+-- ============================================================
+-- x402-TRON: Basic Re-export Shim
+-- Author: Richard Patterson (@De-ASI-INTERFACE)
+-- Date: 2026-07-09
+-- Chain: TRON / TRC-20 / SunSwap v3
+--
+-- Re-exports X402TRON.PaymentVerification as the single
+-- authoritative source of all shared types and definitions.
+-- Chain-prefixed theorem aliases are provided for ergonomic use.
+--
+-- Note: TRON expiration is in milliseconds (block_time_ms /
+-- expiration_ms), matching the TRON network's timestamp format.
+-- ============================================================
+import X402TRON.PaymentVerification
 
 namespace X402TRON
 
-structure TRONPayment where
-  nonce         : Nat
-  amount        : Nat
-  expiration_ms : Nat
-  deriving Repr, DecidableEq
+/-- Alias: replay prevention under the TRON chain prefix.
+    result type: a.nonce ∉ s.used_nonces. -/
+theorem tron_replay_prevented
+    (a : PaymentAuth) (s : FacilitatorState) (h : verify a s) :
+    a.nonce ∉ s.used_nonces :=
+  replay_prevented a s h
 
-structure ContractState where
-  used_nonces  : Finset Nat
-  block_time_ms : Nat
-  deriving Repr
-
-def verify (p : TRONPayment) (s : ContractState) : Prop :=
-  p.nonce ∉ s.used_nonces ∧ s.block_time_ms ≤ p.expiration_ms
-
-theorem tron_replay_prevented (p : TRONPayment) (s : ContractState) (h : verify p s)
-    : p.nonce ∉ s.used_nonces := h.1
-
-theorem tron_not_expired (p : TRONPayment) (s : ContractState) (h : verify p s)
-    : s.block_time_ms ≤ p.expiration_ms := h.2
+/-- Alias: millisecond expiry enforcement under the TRON chain prefix.
+    Delegates to within_expiry: s.block_time_ms ≤ a.expiration_ms. -/
+theorem tron_not_expired
+    (a : PaymentAuth) (s : FacilitatorState) (h : verify a s) :
+    s.block_time_ms ≤ a.expiration_ms :=
+  within_expiry a s h
 
 end X402TRON
