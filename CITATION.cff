@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: 'x402-TRON: HTTP 402 Payment-Gated Routing on TRON'
+version: 1.0.0
+date-released: '2026-07-09'
+type: software
+authors:
+  - family-names: Patterson
+    given-names: Richard
+    alias: De-ASI-INTERFACE
+    country: US
+repository-code: 'https://github.com/De-ASI-INTERFACE/x402-tron-extension'
+license: MIT
+abstract: >-
+  x402 HTTP 402 payment-gated routing for TRON. TRX and TRC-20 (USDT)
+  payment gates, SunSwap v3 routing, TVM contract enforcement, block
+  expiry, nonce replay prevention, Lean 4 formal verification.
+keywords: [tron, trx, trc20, usdt, sunswap, x402, http-402, lean4, richard-patterson]
